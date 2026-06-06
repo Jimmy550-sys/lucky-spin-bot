@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Spin Mini App</title>
+    <style>
+        body {
+            background-color: #4a148c;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { margin-bottom: 5px; }
+        .balance-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #ffd700;
+            background: conic-gradient(
+                #ff3d00 0deg 60deg,
+                #3d5afe 60deg 120deg,
+                #00e676 120deg 180deg,
+                #ffea00 180deg 240deg,
+                #aa00ff 240deg 300deg,
+                #00e5ff 300deg 360deg
+            );
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ffd700;
+            z-index: 10;
+        }
+        .spin-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .spin-btn:disabled { background: #888; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <h1>Lucky Spin</h1>
+    <div class="balance-box">💰 ব্যালেন্স: $<span id="balance">0.00</span></div>
+
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel"></div>
+    </div>
+
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">SPIN NOW</button>
+
+    <script>
+        let balance = 0.00;
+        let isSpinning = false;
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('spinBtn').disabled = true;
+
+            // এলোমেলো কোণে ঘোরানোর জন্য
+            const randomDegree = Math.floor(Math.random() * 360) + 1800; // কমপক্ষে ৫ বার ঘুরবে
+            const wheel = document.getElementById('wheel');
+            wheel.style.transform = `rotate(${randomDegree}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                document.getElementById('spinBtn').disabled = false;
+                
+                // স্পিন শেষে ব্যালেন্স যোগ করা (ডেমো হিসেবে $0.10 যোগ হবে)
+                balance += 0.10;
+                document.getElementById('balance').innerText = balance.toFixed(2);
+                alert("অভিনন্দন! আপনি $0.10 জিতেছেন।");
+            }, 4000); // ৪ সেকেন্ড পর থামবে
+        }
+    </script>
+</body>
+</html>
