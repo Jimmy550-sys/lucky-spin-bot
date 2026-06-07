@@ -1,313 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Spin - Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
-
-        body {
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Top Header & Wallet Section */adsterra
-        .header {
-            width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .balance-box {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: #ffd700;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-
-        /* Content Container */
-        .container {
-            flex: 1;
-            width: 100%;
-            max-width: 450px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-            padding-bottom: 80px; /* Space for bottom nav */
-        }
-
-        .page {
-            display: none;
-            width: 100%;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .page.active {
-            display: flex;
-        }
-
-        /* 3D Glowing Spin Wheel Design */
-        .wheel-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin-bottom: 30px;
-        }
-
-        .pointer {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #ff3366;
-            z-index: 10;
-            filter: drop-shadow(0px 4px 10px rgba(255, 51, 102, 0.7));
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 20px rgba(0,0,0,0.6);
-            border: 8px solid #ffd700;
-            transition: transform 4s cubic-bezier(0.1, 0.8, 0.2, 1);
-        }
-
-        /* 3D Glowing Spin Button */
-        .spin-btn {
-            background: linear-gradient(45deg, #ff007f, #7f00ff);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 0, 127, 0.4), 0 0 20px rgba(127, 0, 255, 0.2);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 4px solid rgba(0,0,0,0.3);
-        }
-
-        .spin-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 5px rgba(255, 0, 127, 0.4);
-            border-bottom: 1px solid rgba(0,0,0,0.3);
-        }
-
-        .spin-count {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #ddd;
-        }
-
-        /* Adsterra Task List Design */
-        .task-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 15px;
-            width: 100%;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .task-info h4 {
-            font-size: 15px;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .task-info p {
-            font-size: 12px;
-            color: #ffd700;
-        }
-
-        .task-btn {
-            background: #00c853;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        /* Leaderboard and Referral Layout */
-        .leaderboard-list {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            padding: 10px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .leaderboard-item:last-child { border: none; }
-        
-        .rank { font-weight: bold; color: #ffd700; margin-right: 10px;}
-
-        .ref-box {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 15px;
-            width: 100%;
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        .ref-input {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #7f00ff;
-            color: white;
-            text-align: center;
-            border-radius: 10px;
-            margin: 15px 0;
-            font-size: 13px;
-        }
-
-        /* Bottom Navigation Bar */
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 450px;
-            height: 65px;
-            background: rgba(20, 18, 30, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #888;
-            cursor: pointer;
-            font-size: 12px;
-            transition: color 0.3s;
-        }
-
-        .nav-item.active {
-            color: #ff007f;
-            font-weight: bold;
-        }
-
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="user-info">
-            <span id="username" style="font-weight: bold;">Loading Player...</span>
-            <div class="balance-box">💰 Balance: $<span id="balance">0.00</span></div>
-        </div>
-        <div id="ton-connect-btn"></div>
-    </div>
-
-    <div class="container">
-        
-        <div id="home-page" class="page active">
-            <div class="wheel-container">
-                <div class="pointer"></div>
-                <canvas id="wheel" width="300" height="300"></canvas>
-            </div>
-            <button class="spin-btn" id="spin-btn" onclick="spinWheel()">Spin Now</button>
-            <div class="spin-count">Available Spins: <span id="spins-left">5</span></div>
-        </div>
-
         <div id="tasks-page" class="page">
-            <h2 style="margin-bottom: 20px; color: #ffd700;">Complete Tasks</h2>
+            <h2 style="margin-bottom: 20px; color: #ffd700; font-size: 22px;">Complete Tasks</h2>
             
             <div class="task-card">
                 <div class="task-info">
                     <h4>Claim Daily Bonus Spin</h4>
                     <p>Reward: +2 Spins</p>
                 </div>
-                <button class="task-btn" onclick="completeTask('your__link_1', 'spins', 2)">Verify</button>
+                <button class="task-btn" onclick="completeTask(https://www.effectivecpmnetwork.com/c74yeszt?key=5802d09715b3a5360bc84acd84f175cb)">Verify</button>
             </div>
 
             <div class="task-card">
                 <div class="task-info">
                     <h4>Visit Secret Website</h4>
-                    <p>Reward: +$0.50 Cash</p>
+                    <p>Reward: +$0.10 Cash</p>
                 </div>
-                <button class="task-btn" onclick="completeTask('https://www.effectivecpmnetwork.com/tixu1gtwy3?key=9c18f10857819dd1423c2df7eb94a688', 'balance', 0.5)">Verify</button>
+                <button class="task-btn" onclick="completeTask('https://www.effectivecpmnetwork.com/tixu1gtwy3?key=9c18f10857819dd1423c2df7eb94a688', 'balance', 0.0001)">Verify</button>
             </div>
         </div>
 
         <div id="leaderboard-page" class="page">
-            <h2 style="margin-bottom: 20px; color: #ffd700;">Top Lucky Players</h2>
+            <h2 style="margin-bottom: 20px; color: #ffd700; font-size: 22px;">Top Lucky Players</h2>
             <div class="leaderboard-list">
-                <div class="leaderboard-item"><span class="rank">#1</span> Jimmy Spin <span style="color:#ffd700;">$150.50</span></div>
-                <div class="leaderboard-item"><span class="rank">#2</span> Alex T2 <span style="color:#ffd700;">$98.00</span></div>
-                <div class="leaderboard-item"><span class="rank">#3</span> Rohim_BD <span style="color:#ffd700;">$75.25</span></div>
-                <div class="leaderboard-item"><span class="rank">#4</span> CryptoKing <span style="color:#ffd700;">$50.00</span></div>
-                <div class="leaderboard-item"><span class="rank">#5</span> User_99 <span style="color:#ffd700;">$32.10</span></div>
+                <div class="leaderboard-item"><span class="rank">#1</span> Jimmy Spin <span style="color:#ffd700;">$25.50</span></div>
+                <div class="leaderboard-item"><span class="rank">#2</span> Alex T2 <span style="color:#ffd700;">$18.00</span></div>
+                <div class="leaderboard-item"><span class="rank">#3</span> Rohim_BD <span style="color:#ffd700;">$15.25</span></div>
+                <div class="leaderboard-item"><span class="rank">#4</span> CryptoKing <span style="color:#ffd700;">$12.00</span></div>
+                <div class="leaderboard-item"><span class="rank">#5</span> User_99 <span style="color:#ffd700;">$9.10</span></div>
             </div>
         </div>
 
         <div id="referral-page" class="page">
-            <h2 style="margin-bottom: 10px; color: #ffd700;">Invite Friends</h2>
-            <p style="text-align:center; font-size:14px; color:#aaa;">Invite friends and get +5 Bonus Spins for every active user!</p>
+            <h2 style="margin-bottom: 10px; color: #ffd700; font-size: 22px;">Invite Friends</h2>
+            <p style="text-align:center; font-size:14px; color:#aaa; padding: 0 10px;">Invite friends and get +3 Bonus Spins for every active user!</p>
             <div class="ref-box">
-                <p>Your Referral Link</p>
+                <p style="color: #b3b0c2;">Your Referral Link</p>
                 <input type="text" class="ref-input" id="ref-link" value="https://t.me/LuckySpinJimmy_bot/game?startapp=loading" readonly>
                 <button class="spin-btn" style="padding:10px 25px; font-size:14px;" onclick="copyRef()">Copy Link</button>
             </div>
@@ -335,162 +61,153 @@
     </div>
 
     <script>
-        // We will place our logical JavaScript in the next step to keep it clean.
+        // Telegram Web App Initialization
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Game Variables & State (Saved safely in LocalStorage)
+        let balance = parseFloat(localStorage.getItem('spin_balance')) || 0.00;
+        let spinsLeft = localStorage.getItem('spins_left') !== null ? parseInt(localStorage.getItem('spins_left')) : 5;
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('username').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            document.getElementById('ref-link').value = `https://t.me/LuckySpinJimmy_bot/game?startapp=${user.id}`;
+        } else {
+            document.getElementById('username').innerText = "Local Tester";
+        }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toFixed(2);
+            document.getElementById('spins-left').innerText = spinsLeft;
+            localStorage.setItem('spin_balance', balance);
+            localStorage.setItem('spins_left', spinsLeft);
+        }
+        updateUI();
+
+        // TON Connect UI init
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://raw.githubusercontent.com/ton-community/tonconnect-manifest/main/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-btn'
+        });
+
+        function switchPage(pageId, navElement) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            navElement.classList.add('active');
+        }
+
+        // --- SPIN WHEEL LOGIC ---
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        
+        const prizes = ["$0.01", "Try Again", "$0.05", "Bonus Spin", "$0.10", "Better Luck", "$0.15", "0.1 Spins"];
+        const colors = ["#ff0055", "#1f1a3a", "#ffcc00", "#1f1a3a", "#00ccff", "#1f1a3a", "#9b51e0", "#1f1a3a"];
+        const numSegments = prizes.length;
+        const anglePerSegment = (2 * Math.PI) / numSegments;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < numSegments; i++) {
+                const startAngle = i * anglePerSegment + currentRotation;
+                const endAngle = startAngle + anglePerSegment;
+                
+                ctx.beginPath();
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 142, startAngle, endAngle);
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "rgba(255,255,255,0.05)";
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(150, 150);
+                ctx.rotate(startAngle + anglePerSegment / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 13px sans-serif";
+                ctx.fillText(prizes[i], 130, 5);
+                ctx.restore();
+            }
+        }
+        drawWheel();
+
+        function spinWheel() {
+            if (isSpinning) return;
+            if (spinsLeft <= 0) {
+                alert("No spins left! Complete tasks to get more spins.");
+                return;
+            }
+
+            isSpinning = true;
+            spinsLeft--;
+            updateUI();
+
+            const randomSegment = Math.floor(Math.random() * numSegments);
+            const extraDegrees = 6 * 360; 
+            const targetAngleDegrees = (numSegments - randomSegment) * (360 / numSegments) - (180 / numSegments);
+            const totalSpinAngleDegrees = extraDegrees + targetAngleDegrees;
+
+            canvas.style.transition = 'transform 4s cubic-bezier(0.1, 0.8, 0.2, 1)';
+            canvas.style.transform = `rotate(${totalSpinAngleDegrees}deg)`;
+
+            setTimeout(() => {
+                isSpinning = false;
+                const wonPrize = prizes[randomSegment];
+                
+                if (wonPrize.includes("$")) {
+                    const amount = parseFloat(wonPrize.replace("$", ""));
+                    balance += amount; 
+                    alert(`🎉 Congratulations! You won ${wonPrize}`);
+                } else if (wonPrize === "Bonus Spin") {
+                    spinsLeft += 1;
+                    alert("🎁 Awesome! You won 1 Bonus Spin.");
+                } else if (wonPrize === "0.1 Spins") {
+                    alert("😊 You got a partial spin credit!");
+                } else {
+                    alert("😢 " + wonPrize);
+                }
+                
+                updateUI();
+            }, 4000);
+        }
+
+        // --- CLEAN & CLUTTER-FREE ADSTERRA LINK HANDLER ---
+        function completeTask(adsterraLink, rewardType, rewardAmount) {
+            alert("Redirecting to task page. Stay there for 5 seconds to claim reward!");
+
+            // টেলিগ্রামের অফিশিয়াল সেফ মেথডে আপনার বসানো Adsterra লিংক ওপেন হবে
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openLink(adsterraLink);
+            } else {
+                window.open(adsterraLink, '_blank');
+            }
+
+            // ১০ সেকেন্ড কাউন্টডাউন এবং রিওয়ার্ড সিস্টেম
+            setTimeout(() => {
+                if (rewardType === 'spins') {
+                    spinsLeft += rewardAmount;
+                    alert(`✅ Task Verified! Added +${rewardAmount} Spins to your account.`);
+                } else if (rewardType === 'balance') {
+                    balance += rewardAmount;
+                    alert(`✅ Task Verified! Added +$${rewardAmount.toFixed(2)} to your balance.`);
+                }
+                updateUI();
+            }, 5000);
+        }
+
+        function copyRef() {
+            const refInput = document.getElementById('ref-link');
+            refInput.select();
+            refInput.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(refInput.value);
+            alert("📋 Referral link copied! Share it with friends.");
+        }
     </script>
 </body>
 </html>
-<script>
-    // Telegram Web App Initialization
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // Full screen the mini app
-
-    // Game Variables & State (Saved in LocalStorage for now)
-    let balance = parseFloat(localStorage.getItem('spin_balance')) || 0.00;
-    let spinsLeft = localStorage.getItem('spins_left') !== null ? parseInt(localStorage.getItem('spins_left')) : 5;
-    let userId = "guest_123";
-
-    // Display Telegram User Info
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        const user = tg.initDataUnsafe.user;
-        userId = user.id;
-        document.getElementById('username').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-        // Set Telegram Bot Referral Link Dynamic
-        document.getElementById('ref-link').value = `https://t.me/LuckySpinJimmy_bot/game?startapp=${user.id}`;
-    } else {
-        document.getElementById('username').innerText = "Local Tester";
-    }
-
-    // Update UI Stats
-    function updateUI() {
-        document.getElementById('balance').innerText = balance.toFixed(2);
-        document.getElementById('spins-left').innerText = spinsLeft;
-        localStorage.setItem('spin_balance', balance);
-        localStorage.setItem('spins_left', spinsLeft);
-    }
-    updateUI();
-
-    // Initialize TON Connect Wallet Button
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-        manifestUrl: 'https://raw.githubusercontent.com/ton-community/tonconnect-manifest/main/tonconnect-manifest.json', // Demo manifest
-        buttonRootId: 'ton-connect-btn'
-    });
-
-    // Navigation System (Tabs Changer)
-    function switchPage(pageId, navElement) {
-        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        
-        document.getElementById(pageId).classList.add('active');
-        navElement.classList.add('active');
-    }
-
-    // --- SPIN WHEEL LOGIC (Canvas Drawing) ---
-    const canvas = document.getElementById('wheel');
-    const ctx = canvas.getContext('2d');
-    const prizes = ["$0.10", "Try Again", "$0.50", "Bonus Spin", "$1.00", "Better Luck", "$5.00", "0.2 Spins"];
-    const colors = ["#ff0055", "#2a2a40", "#ffcc00", "#2a2a40", "#00ccff", "#2a2a40", "#00ff66", "#2a2a40"];
-    const numSegments = prizes.length;
-    const anglePerSegment = (2 * Math.PI) / numSegments;
-    let currentRotation = 0;
-    let isSpinning = false;
-
-    function drawWheel() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < numSegments; i++) {
-            const startAngle = i * anglePerSegment;
-            const endAngle = startAngle + anglePerSegment;
-            
-            ctx.beginPath();
-            ctx.moveTo(150, 150);
-            ctx.arc(150, 150, 140, startAngle, endAngle);
-            ctx.fillStyle = colors[i];
-            ctx.fill();
-            ctx.stroke();
-
-            // Draw Texts on Segments
-            ctx.save();
-            ctx.translate(150, 150);
-            ctx.rotate(startAngle + anglePerSegment / 2);
-            ctx.textAlign = "right";
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 13px Arial";
-            ctx.fillText(prizes[i], 130, 5);
-            ctx.restore();
-        }
-    }
-    drawWheel();
-
-    function spinWheel() {
-        if (isSpinning) return;
-        if (spinsLeft <= 0) {
-            alert("No spins left! Complete tasks to get more spins.");
-            return;
-        }
-
-        isSpinning = true;
-        spinsLeft--;
-        updateUI();
-
-        // Randomize prize selection
-        const randomSegment = Math.floor(Math.random() * numSegments);
-        const extraDegrees = 5 * 360; // Spin 5 times fully
-        const targetAngle = (numSegments - randomSegment) * (360 / numSegments) - (180 / numSegments);
-        const totalSpinAngle = extraDegrees + targetAngle;
-
-        canvas.style.transform = `rotate(${totalSpinAngle}deg)`;
-
-        setTimeout(() => {
-            isSpinning = false;
-            canvas.style.transition = 'none';
-            canvas.style.transform = `rotate(${targetAngle}deg)`;
-            setTimeout(() => canvas.style.transition = 'transform 4s cubic-bezier(0.1, 0.8, 0.2, 1)', 50);
-
-            // Reward distribution logic
-            const wonPrize = prizes[randomSegment];
-            if (wonPrize.includes("$")) {
-                const amount = parseFloat(wonPrize.replace("$", ""));
-                balance += amount;
-                alert(`🎉 Congratulations! You won ${wonPrize}`);
-            } else if (wonPrize === "Bonus Spin") {
-                spinsLeft += 1;
-                alert("🎁 Awesome! You won 1 Bonus Spin.");
-            } else {
-                alert("😢 " + wonPrize);
-            }
-            updateUI();
-        }, 4000);
-    }
-
-    // --- ADSTERRA TASK SYSTEM ---
-    function completeTask(adsterraLink, rewardType, rewardAmount) {
-        alert("Redirecting to task page. Stay there for 5 seconds to claim reward!");
-        
-        // Open Adsterra direct link or dummy link in a new tab
-        if(adsterraLink === 'your_adsterra_link_1' || adsterraLink === 'your_adsterra_link_2') {
-            window.open('https://www.google.com', '_blank'); // Temporary placeholder link
-        } else {
-            window.open(adsterraLink, '_blank');
-        }
-
-        // Simulate Verification Process
-        setTimeout(() => {
-            if (rewardType === 'spins') {
-                spinsLeft += rewardAmount;
-                alert(`✅ Task Verified! Added +${rewardAmount} Spins to your account.`);
-            } else if (rewardType === 'balance') {
-                balance += rewardAmount;
-                alert(`✅ Task Verified! Added +$${rewardAmount.toFixed(2)} to your balance.`);
-            }
-            updateUI();
-        }, 5000); // 5 Seconds cooldown simulation
-    }
-
-    // --- REFERRAL COPY SYSTEM ---
-    function copyRef() {
-        const refInput = document.getElementById('ref-link');
-        refInput.select();
-        refInput.setSelectionRange(0, 99999); // For mobile devices
-        navigator.clipboard.writeText(refInput.value);
-        alert("📋 Referral link copied to clipboard! Share it with friends.");
-    }
-</script>
