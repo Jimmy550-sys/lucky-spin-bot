@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Spin - Premium Bot</title>
+    <title>Lucky Spin - Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <style>
         * {
             margin: 0;
@@ -17,7 +16,6 @@
 
         body {
             background: radial-gradient(circle at center, #1a1528 0%, #0d0b14 100%);
-            background-attachment: fixed;
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -36,7 +34,6 @@
             background: rgba(20, 16, 32, 0.6);
             backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(127, 0, 255, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .user-info {
@@ -53,10 +50,8 @@
             margin-top: 5px;
             font-size: 14px;
             border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
         }
 
-        /* Custom Wallet Button */
         .custom-wallet-btn {
             background: #0098ea;
             color: white;
@@ -66,12 +61,6 @@
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 152, 234, 0.4);
-            transition: all 0.2s ease;
-        }
-        
-        .custom-wallet-btn:active {
-            transform: scale(0.95);
         }
 
         /* Content Container */
@@ -84,8 +73,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            overflow-y: auto;
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
         .page {
@@ -99,70 +87,103 @@
             display: flex;
         }
 
-        /* 3D Glowing Neon Spin Wheel Design */
-        .wheel-container {
+        /* CSS-Based Simple & Stable Spin Wheel Layout */
+        .wheel-wrapper {
             position: relative;
-            width: 310px;
-            height: 310px;
-            margin-bottom: 30px;
-            background: padding-box, linear-gradient(135deg, #ff007f, #7f00ff);
-            border: 6px solid transparent;
-            border-radius: 50%;
-            box-shadow: 0 0 35px rgba(127, 0, 255, 0.5);
+            width: 280px;
+            height: 280px;
+            margin-bottom: 25px;
         }
 
-        .pointer {
+        .wheel-pointer {
             position: absolute;
-            top: -12px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-top: 28px solid #ff0055;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff0055;
             z-index: 10;
-            filter: drop-shadow(0px 0px 8px #ff0055);
         }
 
-        canvas {
+        .main-wheel {
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: #120e1e;
+            border: 8px solid #ff007f;
+            box-shadow: 0 0 25px rgba(127, 0, 255, 0.6);
+            background: conic-gradient(
+                #ff0055 0deg 45deg,
+                #1f1a3a 45deg 90deg,
+                #ffcc00 90deg 135deg,
+                #1f1a3a 135deg 180deg,
+                #00ccff 180deg 225deg,
+                #1f1a3a 225deg 270deg,
+                #9b51e0 270deg 315deg,
+                #1f1a3a 315deg 360deg
+            );
+            position: relative;
         }
 
-        /* Premium Cyberpunk Spin Button */
+        /* Text overlay over CSS gradient wheel */
+        .wheel-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        .label {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transform-origin: center;
+            font-weight: bold;
+            font-size: 12px;
+            padding-top: 20px;
+            color: #fff;
+        }
+
+        /* Label Angles */
+        .l1 { transform: rotate(22.5deg); }
+        .l2 { transform: rotate(67.5deg); }
+        .l3 { transform: rotate(112.5deg); }
+        .l4 { transform: rotate(157.5deg); }
+        .l5 { transform: rotate(202.5deg); }
+        .l6 { transform: rotate(247.5deg); }
+        .l7 { transform: rotate(292.5deg); }
+        .l8 { transform: rotate(337.5deg); }
+
+        /* Premium Spin Button */
         .spin-btn {
             background: linear-gradient(45deg, #ff007f, #7f00ff);
             color: white;
             border: none;
-            padding: 16px 45px;
-            font-size: 19px;
+            padding: 15px 40px;
+            font-size: 18px;
             font-weight: bold;
             border-radius: 35px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 4px solid rgba(0,0,0,0.4);
         }
 
         .spin-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
-            border-bottom: 1px solid transparent;
+            transform: scale(0.98);
         }
 
         .spin-count {
             margin-top: 12px;
             font-size: 14px;
             color: #b3b0c2;
-            letter-spacing: 0.5px;
         }
 
-        /* Adsterra Task List Design */
+        /* Adsterra Tasks Box Design */
         .task-card {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(127, 0, 255, 0.15);
@@ -173,8 +194,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .task-info h4 {
@@ -197,10 +216,9 @@
             font-weight: bold;
             cursor: pointer;
             font-size: 13px;
-            box-shadow: 0 0 10px rgba(0, 200, 83, 0.3);
         }
 
-        /* Leaderboard Setup */
+        /* Leaderboard and Referral styling */
         .leaderboard-list {
             width: 100%;
             background: rgba(15, 12, 28, 0.7);
@@ -216,5 +234,261 @@
             border-bottom: 1px solid rgba(255,255,255,0.03);
         }
 
-        .leaderboard-item:last-child { border: none; }
+        .ref-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(127, 0, 255, 0.15);
+            padding: 20px;
+            border-radius: 16px;
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .ref-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #7f00ff;
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 450px;
+            height: 68px;
+            background: rgba(13, 11, 20, 0.95);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(127, 0, 255, 0.2);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #696675;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #ff007f;
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="user-info">
+            <span id="username" style="font-weight: bold; color: #e2dff2;">Loading Player...</span>
+            <div class="balance-box">💰 Balance: $<span id="balance">0.00</span></div>
+        </div>
+        <button class="custom-wallet-btn" onclick="alert('Wallet Connection Coming Soon!')">💎 Connect Wallet</button>
+    </div>
+
+    <div class="container">
         
+        <div id="home-page" class="page active">
+            <div class="wheel-wrapper">
+                <div class="wheel-pointer"></div>
+                <div class="main-wheel" id="wheel-element">
+                    <div class="wheel-labels">
+                        <div class="label l1">$0.01</div>
+                        <div class="label l2">Try Again</div>
+                        <div class="label l3">$0.05</div>
+                        <div class="label l4">Bonus Spin</div>
+                        <div class="label l5">$0.10</div>
+                        <div class="label l6">Better Luck</div>
+                        <div class="label l7">$0.15</div>
+                        <div class="label l8">0.1 Spins</div>
+                    </div>
+                </div>
+            </div>
+            <button class="spin-btn" onclick="startSpin()">Spin Now</button>
+            <div class="spin-count">Available Spins: <span id="spins-left">5</span></div>
+        </div>
+
+        <div id="tasks-page" class="page">
+            <h2 style="margin-bottom: 20px; color: #ffd700; font-size: 22px;">Complete Tasks</h2>
+            
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>Claim Daily Bonus Spin</h4>
+                    <p>Reward: +2 Spins</p>
+                </div>
+                <button class="task-btn" onclick="runTask('https://www.effectivecpmnetwork.com/tixu1gtwy3?key=9c18f10857819dd1423c2df7eb94a688', 'spins', 2)">Verify</button>
+            </div>
+
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>Visit Secret Website</h4>
+                    <p>Reward: +$0.10 Cash</p>
+                </div>
+                <button class="task-btn" onclick="runTask('https://www.effectivecpmnetwork.com/c74yeszt?key=5802d09715b3a5360bc84acd84f175cb', 'balance', 0.10)">Verify</button>
+            </div>
+        </div>
+
+        <div id="leaderboard-page" class="page">
+            <h2 style="margin-bottom: 20px; color: #ffd700; font-size: 22px;">Top Lucky Players</h2>
+            <div class="leaderboard-list">
+                <div class="leaderboard-item"><span>#1 Jimmy Spin</span><span style="color:#ffd700;">$25.50</span></div>
+                <div class="leaderboard-item"><span>#2 Alex T2</span><span style="color:#ffd700;">$18.00</span></div>
+                <div class="leaderboard-item"><span>#3 Rohim_BD</span><span style="color:#ffd700;">$15.25</span></div>
+                <div class="leaderboard-item"><span>#4 CryptoKing</span><span style="color:#ffd700;">$12.00</span></div>
+            </div>
+        </div>
+
+        <div id="referral-page" class="page">
+            <h2 style="margin-bottom: 10px; color: #ffd700; font-size: 22px;">Invite Friends</h2>
+            <div class="ref-box">
+                <p style="color: #b3b0c2;">Your Referral Link</p>
+                <input type="text" class="ref-input" id="ref-link" value="https://t.me/LuckySpinJimmy_bot/game?startapp=loading" readonly>
+                <button class="spin-btn" style="padding:10px 25px; font-size:14px;" onclick="copyLink()">Copy Link</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="navigateTo('home-page', this)">
+            <span class="nav-icon">🎮</span>
+            <span>Spin</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('tasks-page', this)">
+            <span class="nav-icon">💰</span>
+            <span>Tasks</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('leaderboard-page', this)">
+            <span class="nav-icon">🏆</span>
+            <span>Rank</span>
+        </div>
+        <div class="nav-item" onclick="navigateTo('referral-page', this)">
+            <span class="nav-icon">👥</span>
+            <span>Invite</span>
+        </div>
+    </div>
+
+    <script>
+        const tgApp = window.Telegram?.WebApp;
+        if (tgApp) {
+            tgApp.expand();
+            if (tgApp.initDataUnsafe?.user) {
+                const u = tgApp.initDataUnsafe.user;
+                document.getElementById('username').innerText = u.first_name + (u.last_name ? " " + u.last_name : "");
+                document.getElementById('ref-link').value = `https://t.me/LuckySpinJimmy_bot/game?startapp=${u.id}`;
+            } else {
+                document.getElementById('username').innerText = "Lucky Player";
+            }
+        } else {
+            document.getElementById('username').innerText = "Local Tester";
+        }
+
+        let userBalance = parseFloat(localStorage.getItem('sb_val')) || 0.00;
+        let userSpins = localStorage.getItem('sl_val') !== null ? parseInt(localStorage.getItem('sl_val')) : 5;
+
+        function refreshInterface() {
+            document.getElementById('balance').innerText = userBalance.toFixed(2);
+            document.getElementById('spins-left').innerText = userSpins;
+            localStorage.setItem('sb_val', userBalance);
+            localStorage.setItem('sl_val', userSpins);
+        }
+        refreshInterface();
+
+        function navigateTo(pId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // --- FIXED AND STABLE CSS ROTATION WHEEL ---
+        let spinningState = false;
+        const rewardsList = ["$0.01", "Try Again", "$0.05", "Bonus Spin", "$0.10", "Better Luck", "$0.15", "0.1 Spins"];
+
+        function startSpin() {
+            if (spinningState) return;
+            if (userSpins <= 0) {
+                alert("No spins left! Complete tasks to earn more.");
+                return;
+            }
+
+            spinningState = true;
+            userSpins--;
+            refreshInterface();
+
+            const targetIndex = Math.floor(Math.random() * rewardsList.length);
+            // Calculate segment angle
+            const degPerSeg = 360 / rewardsList.length;
+            const targetRotation = (360 - (targetIndex * degPerSeg)) + 1440; // 4 Full loops + target position
+
+            const wheelObj = document.getElementById('wheel-element');
+            wheelObj.style.transform = 'none';
+            
+            // Force redraw
+            void wheelObj.offsetHeight; 
+
+            wheelObj.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.2, 1)';
+            wheelObj.style.transform = `rotate(${targetRotation}deg)`;
+
+            setTimeout(() => {
+                spinningState = false;
+                const resultReward = rewardsList[targetIndex];
+
+                if (resultReward.includes("$")) {
+                    userBalance += parseFloat(resultReward.replace("$", ""));
+                    alert(`🎉 Congratulations! You won ${resultReward}`);
+                } else if (resultReward === "Bonus Spin") {
+                    userSpins += 1;
+                    alert("🎁 Awesome! You won 1 Bonus Spin.");
+                } else {
+                    alert(`ℹ️ Result: ${resultReward}`);
+                }
+                refreshInterface();
+            }, 3500);
+        }
+
+        // --- ADSTERRA TASK PROCESSOR ---
+        function runTask(url, type, reward) {
+            alert("Opening task link. Please browse for 5 seconds to get verified!");
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
+
+            setTimeout(() => {
+                if (type === 'spins') {
+                    userSpins += reward;
+                    alert(`✅ Task Complete! Received +${reward} Spins.`);
+                } else if (type === 'balance') {
+                    userBalance += reward;
+                    alert(`✅ Task Complete! Received +$${reward.toFixed(2)} Cash.`);
+                }
+                refreshInterface();
+            }, 5000);
+        }
+
+        function copyLink() {
+            const inputEl = document.getElementById('ref-link');
+            inputEl.select();
+            navigator.clipboard.writeText(inputEl.value);
+            alert("📋 Referral link copied successfully!");
+        }
+    </script>
+</body>
+</html>
